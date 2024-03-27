@@ -59,8 +59,6 @@
   <script>
     (() => {
       Module = {
-        preRun: [],
-        postRun: [],
         print: function () {
           var e = document.querySelector("#output");
           return e && (e.value = ""), function (t) {
@@ -77,9 +75,7 @@
             e.preventDefault();
           }), !1), e
         }(),
-        totalDependencies: 0,
       };
-      console.log(Module);
       window.onerror = function () {
         Module.printErr("[post-exception status] " + e)
       }
