@@ -10,6 +10,10 @@ Install Raylib in some way, I built from source in static mode
 
 For now I'm using a shell script to build, I'm using clang because the editor plugin uses it
 
+### Target Native 
+
+Raylib built in static mode for PLATFORM_DESKTOP
+
 To compile 
 ```
 chmod +x build_linux.sh
@@ -23,6 +27,24 @@ To execute
 ```
 ./main 
 ```
+
+### Target Web 
+
+Emscripten installed, Raylib built with PLATFORM_WEB 
+
+To compile 
+```
+chmod +x build_web_ems.sh
+./build_web_ems.sh
+```
+
+Use a Python or Node simple http server on public/ to run
+
+```
+http-server public
+```
+
+Navigate to localhost:8080 
 
 ### Controls 
 
