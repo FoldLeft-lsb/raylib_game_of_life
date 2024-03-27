@@ -1,0 +1,91 @@
+<!doctypehtml>
+  <html lang=EN-us>
+
+  <head>
+    <meta charset=utf-8>
+    <meta content="text/html; charset=utf-8" http-equiv=Content-Type>
+    <title>Game of Life</title>
+    <meta content="Game of Life" name=title>
+    <meta content="Conway's Game of Life made with Raylib and C++" name=description>
+    <meta content="raylib, programming, examples, html5, C, C++, library, games, videogames" name=keywords>
+    <meta content="width=device-width" name=viewport>
+    <link href=https://www.raylib.com/favicon.ico rel="shortcut icon">
+    <style>
+      body {
+        margin: 0;
+      }
+
+      .emscripten {
+        padding-right: 0;
+        display: block;
+      }
+
+      div.emscripten {
+        text-align: center
+      }
+
+      div.emscripten_border {
+        border: 1px solid #000;
+        width: 750px;
+      }
+
+      canvas.emscripten {
+        border: 0 none;
+        background: #000;
+      }
+
+      #output {
+        width: 745px;
+        height: 140px;
+        margin: 0 auto;
+        display: block;
+        background-color: #000;
+        color: #25ae26;
+        font-family: 'Lucida Console', Monaco, monospace;
+        outline: 0;
+        float: left;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class=emscripten_border>
+      <canvas class=emscripten id=canvas oncontextmenu=event.preventDefault() tabindex=-1></canvas>
+    </div>
+    <textarea id=output rows=8></textarea>
+
+  </body>
+
+  <script>
+    (() => {
+      Module = {
+        preRun: [],
+        postRun: [],
+        print: function () {
+          var e = document.querySelector("#output");
+          return e && (e.value = ""), function (t) {
+            arguments.length > 1 && (t = Array.prototype.slice.call(arguments).join(" ")), console.log(t), e && (e.value += t + "\n", e.scrollTop = e.scrollHeight)
+          }
+        }(),
+        printErr: function (e) {
+          arguments.length > 1 && (e = Array.prototype.slice.call(arguments).join(" ")); console.error(e);
+        },
+        canvas: function () {
+          var e = document.querySelector("#canvas");
+          return e.addEventListener("webglcontextlost", (function (e) {
+            alert("WebGL context lost. You will need to reload the page.");
+            e.preventDefault();
+          }), !1), e
+        }(),
+        totalDependencies: 0,
+      };
+      console.log(Module);
+      window.onerror = function () {
+        Module.printErr("[post-exception status] " + e)
+      }
+    })()
+  </script>
+
+  {{{ SCRIPT }}}
+
+  </html>

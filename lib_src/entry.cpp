@@ -1,3 +1,4 @@
+
 #include "entry.hpp"
 #include "simulation.hpp"
 #include <raylib.h>
@@ -9,6 +10,7 @@ int loop() {
   int target_fps = 12;
 
   Simulation simulation{screenWidth, screenHeight, cellSize};
+
   SetTargetFPS(target_fps);
   InitWindow(screenWidth, screenHeight, "Game of Life");
 
