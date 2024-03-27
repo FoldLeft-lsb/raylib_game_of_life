@@ -17,14 +17,17 @@ Simulation simulation{screenWidth, screenHeight, cellSize};
 
 void update_draw_frame() {
   if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+    std::cout << "GAME: Toggle Cell" << std::endl;
     Vector2 mousePos = GetMousePosition();
     simulation.toggle_cell(mousePos.y / cellSize, mousePos.x / cellSize);
   };
 
   if (IsKeyPressed(KEY_SPACE)) {
     if (simulation.is_running()) {
+      std::cout << "GAME: Pause" << std::endl;
       simulation.stop();
     } else {
+      std::cout << "GAME: Play" << std::endl;
       simulation.start();
     }
   } else if (IsKeyPressed(KEY_RIGHT_BRACKET)) {
@@ -36,8 +39,10 @@ void update_draw_frame() {
       SetTargetFPS(target_fps);
     }
   } else if (IsKeyPressed(KEY_R)) {
+    std::cout << "GAME: Fill Random" << std::endl;
     simulation.create_random_state();
   } else if (IsKeyPressed(KEY_C)) {
+    std::cout << "GAME: Clear" << std::endl;
     simulation.clear_grid();
   };
 
@@ -57,7 +62,7 @@ int loop() {
 #if defined(PLATFORM_WEB)
   emscripten_set_main_loop(update_draw_frame, 0, 1);
 #else
-  std::cout << "Failed to load Platform correctly" << std::endl;
+  std::cout << "GAME: Failed to load Platform correctly" << std::endl;
 #endif
 
   CloseWindow();
