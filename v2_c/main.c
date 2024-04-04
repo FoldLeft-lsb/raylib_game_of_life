@@ -2,6 +2,6 @@
 #include <stdio.h>
 
 int main(void) {
-  printf("Loading Game of Life - C");
+  printf("Game of Life\n");
   return loop();
 };
