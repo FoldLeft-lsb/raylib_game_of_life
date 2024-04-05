@@ -3,46 +3,18 @@
 
 #include <raylib.h>
 
-void init_cells(State *state) {
-  for (int x = 0; x < CELLS_WIDTH; x++) {
-    for (int y = 0; y < CELLS_WIDTH; y++) {
-      state->grid.cells[x][y] = 0;
-    }
-  }
-}
-
-void fill_random(State *state) {
-  for (int x = 0; x < CELLS_WIDTH; x++) {
-    for (int y = 0; y < CELLS_WIDTH; y++) {
-      if (GetRandomValue(0, 4) == 4) {
-        state->grid.cells[x][y] = 1;
-      } else {
-        state->grid.cells[x][y] = 0;
-      }
-    }
-  }
-}
-
-bool is_in_bounds(int x, int y) {
+static bool is_in_bounds(int x, int y) {
   return x >= 0 && x < CELLS_WIDTH && y >= 0 && y < CELLS_WIDTH;
 }
 
-void toggle_cell(State *state, int x, int y) {
+static void toggle_cell(State *state, int x, int y) {
   if (is_in_bounds(x, y)) {
     int cell = state->grid.cells[x][y];
     state->grid.cells[x][y] = (cell == 1) ? 0 : 1;
   }
 }
 
-void apply_grid_update(State *state) {
-  for (int x = 0; x < CELLS_WIDTH; x++) {
-    for (int y = 0; y < CELLS_WIDTH; y++) {
-      state->grid.cells[x][y] = state->grid.temp_cells[x][y];
-    }
-  }
-}
-
-int count_live_neighbors(State *state, int x, int y) {
+static int count_live_neighbors(State *state, int x, int y) {
   int neighbors = 0;
   for (int offset_x = -1; offset_x <= 1; offset_x++) {
     for (int offset_y = -1; offset_y <= 1; offset_y++) {
@@ -57,37 +29,69 @@ int count_live_neighbors(State *state, int x, int y) {
   return neighbors;
 }
 
-void update_grid(State *state) {
-  for (int x = 0; x < CELLS_WIDTH; x++) {
-    for (int y = 0; y < CELLS_WIDTH; y++) {
-      int neighbors = count_live_neighbors(state, x, y);
-      if (state->grid.cells[x][y] == 1) {
-        if (neighbors > 3 || neighbors < 2) {
-          state->grid.temp_cells[x][y] = 0;
-        } else {
-          state->grid.temp_cells[x][y] = 1;
-        }
-      } else {
-        if (neighbors == 3) {
-          state->grid.temp_cells[x][y] = 1;
-        } else {
-          state->grid.temp_cells[x][y] = 0;
-        }
-      }
-    }
-  }
-  apply_grid_update(state);
+static void init_cell(int x, int y, State *state) {
+  state->grid.cells[x][y] = 0;
 }
 
-void draw_cells(State *state) {
-  for (int x = 0; x < CELLS_WIDTH; x++) {
-    for (int y = 0; y < CELLS_WIDTH; y++) {
-      Color color = (state->grid.cells[x][y]) ? (Color){0, 255, 0, 255}
-                                              : (Color){55, 55, 55, 255};
-      DrawRectangle(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE - 1, CELL_SIZE - 1,
-                    color);
+static void random_cell(int x, int y, State *state) {
+  if (GetRandomValue(0, 4) == 4) {
+    state->grid.cells[x][y] = 1;
+  } else {
+    state->grid.cells[x][y] = 0;
+  }
+}
+
+static void copy_temp_grid_cell(int x, int y, State *state) {
+  state->grid.cells[x][y] = state->grid.temp_cells[x][y];
+}
+
+static void progress_cell_lifecycle(int x, int y, State *state) {
+  int neighbors = count_live_neighbors(state, x, y);
+  if (state->grid.cells[x][y] == 1) {
+
+    if (neighbors > 3 || neighbors < 2) {
+      state->grid.temp_cells[x][y] = 0;
+    } else {
+      state->grid.temp_cells[x][y] = 1;
+    }
+  } else {
+    if (neighbors == 3) {
+      state->grid.temp_cells[x][y] = 1;
+    } else {
+      state->grid.temp_cells[x][y] = 0;
     }
   }
+}
+
+static void draw_cell(int x, int y, State *state) {
+  Color color = (state->grid.cells[x][y]) ? (Color){0, 255, 0, 255}
+                                          : (Color){55, 55, 55, 255};
+  DrawRectangle(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE - 1, CELL_SIZE - 1,
+                color);
+}
+
+static grid_update *init_cell_p = init_cell;
+static grid_update *random_cell_p = random_cell;
+static grid_update *copy_temp_grid_cell_p = copy_temp_grid_cell;
+static grid_update *progress_cell_lifecycle_p = progress_cell_lifecycle;
+static grid_update *draw_cell_p = draw_cell;
+
+static void traverse_grid(State *state, grid_update *update) {
+  for (int x = 0; x < CELLS_WIDTH; x++) {
+    for (int y = 0; y < CELLS_WIDTH; y++) {
+      (update)(x, y, state);
+    }
+  }
+}
+
+static void draw_cells(State *state) { traverse_grid(state, draw_cell_p); }
+static void fill_random(State *state) { traverse_grid(state, random_cell_p); }
+
+void init_cells(State *state) { traverse_grid(state, init_cell_p); }
+
+void update_grid(State *state) {
+  traverse_grid(state, progress_cell_lifecycle_p);
+  traverse_grid(state, copy_temp_grid_cell_p);
 }
 
 void draw(State *state) {

@@ -19,6 +19,8 @@ typedef struct State {
   bool running;
 } State;
 
+typedef void grid_update(int x, int y, State *state);
+
 void init_cells(State *state);
 void update_grid(State *state);
 void draw(State *state);
