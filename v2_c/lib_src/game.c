@@ -44,12 +44,13 @@ void apply_grid_update(State *state) {
 
 int count_live_neighbors(State *state, int x, int y) {
   int neighbors = 0;
-  for (int o_x = -1; o_x <= 1; o_x++) {
-    for (int oy = -1; oy <= 1; oy++) {
-      int nx_r = (x + o_x + CELLS_WIDTH) % CELLS_WIDTH;
-      int ny_r = (y + oy + CELLS_WIDTH) % CELLS_WIDTH;
-      if (!(x == nx_r && y == ny_r) && is_in_bounds(nx_r, ny_r)) {
-        neighbors += state->grid.cells[nx_r][ny_r];
+  for (int offset_x = -1; offset_x <= 1; offset_x++) {
+    for (int offset_y = -1; offset_y <= 1; offset_y++) {
+      int neighbor_x = (x + offset_x + CELLS_WIDTH) % CELLS_WIDTH;
+      int neighbor_y = (y + offset_y + CELLS_WIDTH) % CELLS_WIDTH;
+      if (!(x == neighbor_x && y == neighbor_y) &&
+          is_in_bounds(neighbor_x, neighbor_y)) {
+        neighbors += state->grid.cells[neighbor_x][neighbor_y];
       }
     }
   }
@@ -83,8 +84,8 @@ void draw_cells(State *state) {
     for (int y = 0; y < CELLS_WIDTH; y++) {
       Color color = (state->grid.cells[x][y]) ? (Color){0, 255, 0, 255}
                                               : (Color){55, 55, 55, 255};
-      DrawRectangle(x * CELL_SIZE, (y * CELL_SIZE), CELL_SIZE - 1,
-                    CELL_SIZE - 1, color);
+      DrawRectangle(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE - 1, CELL_SIZE - 1,
+                    color);
     }
   }
 }
